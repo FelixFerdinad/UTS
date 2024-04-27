@@ -43,7 +43,7 @@ async function getUsers(nomorHalaman, ukuranHalaman, sortir, pencarian) {
           users = await User.find(query).sort(sortCriteria);
       } else {
           users = await User.find(query)
-              .sortir(sortCriteria)
+              .sort(sortCriteria)
               .skip((nomorHalaman - 1) * ukuranHalaman)
               .limit(ukuranHalaman);
       }
