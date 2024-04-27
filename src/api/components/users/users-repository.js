@@ -55,7 +55,7 @@ async function getUsers(nomorHalaman, ukuranHalaman, sortir, pencarian) {
       return { 
         page_number : nomorHalaman,
         page_size : ukuranHalaman,
-        count : totalCount,
+        count : users.length,
         total_pages : pagesTotal, 
         has_previous_page : has_previous_page, 
         has_next_page : has_next_page,
