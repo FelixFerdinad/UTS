@@ -5,21 +5,14 @@ const { hashPassword, passwordMatched } = require('../../../utils/password');
  * Get list of users
  * @returns {Array}
  */
-async function getUsers() {
-  const users = await usersRepository.getUsers();
-
-  const results = [];
-  for (let i = 0; i < users.length; i += 1) {
-    const user = users[i];
-    results.push({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-    });
-  }
-
-  return results;
-}
+async function getUsers(nomorHalaman, ukuranHalaman, sortir, pencarian) {
+    try {
+      const users = await usersRepository.getUsers(nomorHalaman, ukuranHalaman, sortir, pencarian);
+      return users;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+};
 
 /**
  * Get user detail

@@ -10,13 +10,22 @@ const { errorResponder, errorTypes } = require('../../../core/errors');
  */
 async function getUsers(request, response, next) {
   try {
-    const users = await usersService.getUsers();
-    return response.status(200).json(users);
-  } catch (error) {
-    return next(error);
-  }
-}
+      // menetapkan nilai untuk default jika tidak disediakan 
+      const nomorHalaman = parseInt(request.query.page_number) || 1;
+      const ukuranHalaman = parseInt(request.query.page_size) || 0;
+      const sortir = request.query.sort || 'asc';
+      const pencarian = request.query.search || '';
 
+      // menetapkan default sort ke 'asc' jika tidak disediakan atau sort tidak valid
+
+
+      const users = await usersService.getUsers(nomorHalaman, ukuranHalaman, sortir, pencarian);
+      response.status(200).json(users);
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
+};
+    
 /**
  * Handle get user detail request
  * @param {object} request - Express request object
