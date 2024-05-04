@@ -25,7 +25,7 @@ async function getUsers(request, response, next) {
     response.status(500).json({ error: error.message });
   }
 };
-    
+  
 /**
  * Handle get user detail request
  * @param {object} request - Express request object
