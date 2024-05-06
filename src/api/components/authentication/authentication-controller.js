@@ -16,12 +16,12 @@ async function login(request, response, next) {
   
   try {
     // Melakukan pengecekan apakah pengguna telah melebihi batas percobaan login
-    let userAttempts = await authenticationRepository.getLoginAttempts(email);
+    let penggunaAttempt = await authenticationRepository.getLoginAttempts(email);
     const lastFailedAttempt = await authenticationRepository.getLastFailedAttempt(email);
-    const currentTime = Date.now();
+    const waktuSekarang = Date.now();
 
-    if (userAttempts >= MAX_LOGIN_ATTEMPTS && lastFailedAttempt) {
-      const timeSinceLastAttempt = currentTime - lastFailedAttempt;
+    if (penggunaAttempt >= MAX_LOGIN_ATTEMPTS && lastFailedAttempt) {
+      const timeSinceLastAttempt = waktuSekarang - lastFailedAttempt;
 
       if (timeSinceLastAttempt < LOGIN_TIMEOUT_DURATION) {
         const timeRemaining = Math.ceil((LOGIN_TIMEOUT_DURATION - timeSinceLastAttempt) / 1000 / 60);
@@ -32,33 +32,33 @@ async function login(request, response, next) {
       } else {
         // Reset percobaan login jika waktu sudah lewat dari batas timeout
         await authenticationRepository.resetLoginAttempts(email);
-        userAttempts = 0; // Reset nilai percobaan login pengguna
+        penggunaAttempt = 0; // Reset nilai percobaan login pengguna
       }
     }
 
     // Check login credentials
-    const loginSuccess = await authenticationServices.checkLoginCredentials(
+    const loginBerhasils = await authenticationServices.checkLoginCredentials(
       email,
       password
     );
 
-    if (!loginSuccess) {
+    if (!loginBerhasils) {
       // Menambahkan percobaan login gagal
       await authenticationRepository.addFailedLoginAttempt(email);
       
       // Mendapatkan waktu sekarang
-      const currentTime = new Date();
+      const waktuSekarang = new Date();
       
-      // Mengonversi nilai userAttempts menjadi bilangan bulat sebelum menambahkan 1
-      userAttempts = parseInt(userAttempts) || 0;
+      // Mengonversi nilai penggunaAttempt menjadi bilangan bulat sebelum menambahkan 1
+      penggunaAttempt = parseInt(penggunaAttempt) || 0;
 
       // Menambahkan pesan log untuk percobaan login yang gagal
-      const attemptMessage = `${formatTime(currentTime)} User ${email} gagal login. Attempt = ${userAttempts + 1}.`;
+      const attemptMessage = `${formatTime(waktuSekarang)} User ${email} gagal login. Attempt = ${penggunaAttempt + 1}.`;
 
       // Mengirimkan pesan log ke konsol
       console.log(attemptMessage);
 
-      if (userAttempts + 1 >= MAX_LOGIN_ATTEMPTS) {
+      if (penggunaAttempt + 1 >= MAX_LOGIN_ATTEMPTS) {
         throw errorResponder(
           errorTypes.TOO_MANY_ATTEMPTS,
           `${attemptMessage} Limit percobaan login tercapai.`
@@ -73,7 +73,7 @@ async function login(request, response, next) {
     // Reset percobaan login jika berhasil
     await authenticationRepository.resetLoginAttempts(email);
 
-    return response.status(200).json(loginSuccess);
+    return response.status(200).json(loginBerhasils);
   } catch (error) {
     return next(error);
   }
